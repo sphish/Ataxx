@@ -4,14 +4,13 @@
 #include <QMainWindow>
 #include <QPainter>
 #include <QPen>
+#include <QWidget>
+#include <QPushButton>
 #include <QBrush>
 #include <QMouseEvent>
 #include <QDebug>
 #include <QMessageBox>
 
-namespace Ui {
-class MainWindow;
-}
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -19,22 +18,23 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
     void paintEvent(QPaintEvent *);
     void mousePressEvent(QMouseEvent *mouseEvent);
-    void checkWin();
-    void winShow(int stand);
-    void clear();
 
     int xPressed;
     int yPressed;
     int first;
     int numCounts;
-    int stepCounts;
+    bool turn;
     int checkBoard[7][7];
 
-private:
-    Ui::MainWindow *ui;
+    QFont font;
+    QPushButton *newGame, *abouts, *recall, *place, *readFile, *pass;
+
+public slots:
+    void clear();
+    void checkWin();
+    void winShow(int stand);
 };
 
 #endif // MAINWINDOW_H
