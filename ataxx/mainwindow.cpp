@@ -91,6 +91,13 @@ void MainWindow::haha() {
 }
 
 void MainWindow::retire() {
+	bool different = false;
+	for (int i = 0; i < 7; i++)
+		for (int j = 0; j < 7; j++)
+			different |= checkBoard[i][j] != backBoard[i][j];
+	if (!different) {
+		QMessageBox::information(NULL, "Warning", "You can only recall for one time!", "confirm");
+	}
 	memcpy(checkBoard, backBoard, sizeof checkBoard);
 	first = false;
 	turn ^= 1;
