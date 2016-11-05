@@ -1,20 +1,20 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <cstring>
+#include <cmath>
+#include <algorithm>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent),
 	  ui(new Ui::MainWindow) {
 	this->xPressed = 0;
 	this->yPressed = 0;
-	this->numCounts = 0;
+	this->numCounts = 4;
 	this->stepCounts = 0;
+	this->first = 0;
 	memset(checkBoard, 0, sizeof checkBoard);
-	/*
-		for (int i = 0; i < 7; i++)
-			for (int j = 0; j < 7; j++)
-				checkBoard[i][j] = 0;
-		*/
+	checkBoard[0][0] = checkBoard[6][6] = 1;
+	checkBoard[0][6] = checkBoard[6][0] = -1;
 	this->setMaximumHeight(600);
 	this->setMinimumHeight(600);
 	this->setMinimumSize(600, 600);
@@ -62,14 +62,41 @@ void MainWindow::mousePressEvent(QMouseEvent *mouseEvent) {
 	if (x < 20 || x > 580 || y < 20 || y > 580 || (x - 20) % 80 == 0 || (y - 20) % 80 == 0)
 		return ;
 	x = (x - 20) / 80, y = (y - 20) / 80;
-	int stand = (this->stepCounts & 1) ? -1 : 1;
-	this->checkBoard[x][y] = stand;
-	this->update();
 
-	this->stepCounts++;
-	this->numCounts++;
-	if (this->numCounts == 49)
-		checkWin();
+
+
+	int stand = (this->stepCounts & 1) ? -1 : 1;
+	if (first) {
+		int dist = std::max(abs(x - xPressed), abs(y - yPressed));
+		if (this->checkBoard[x][y] || dist > 2) {
+			first = false;
+			return ;
+		}
+
+		if (dist == 2)
+			this->checkBoard[xPressed][yPressed] = 0;
+		else
+			this->numCounts++;
+		this->checkBoard[x][y] = stand;
+		for (int i = -1; i <= 1; i++)
+			for (int j = -1; j <= 1; j++)
+				if (x + i >= 0 && x + i < 7 && y + j >= 0 && y + j < 7 && this->checkBoard[x + i][y + j])
+					this->checkBoard[x + i][y + j] = stand;
+		this->update();
+
+		this->stepCounts++;
+		first = false;
+		if (this->numCounts == 49)
+			checkWin();
+	}
+	else {
+		if (checkBoard[x][y] != stand)
+			return ;
+		xPressed = x;
+		yPressed = y;
+		first = true;
+	}
+
 }
 
 void MainWindow::checkWin() {
@@ -89,8 +116,12 @@ void MainWindow::winShow(int stand) {
 }
 
 void MainWindow::clear() {
-	this->numCounts = this->stepCounts = 0;
-	memset(this->checkBoard, 0, sizeof this->checkBoard);
+	this->numCounts = 4;
+	this->stepCounts = 0;
+	this->first = false;
+	memset(checkBoard, 0, sizeof checkBoard);
+	checkBoard[0][0] = checkBoard[6][6] = 1;
+	checkBoard[0][6] = checkBoard[6][0] = -1;
 }
 
 

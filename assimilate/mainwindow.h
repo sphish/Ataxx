@@ -28,6 +28,7 @@ public:
 
     int xPressed;
     int yPressed;
+    int first;
     int numCounts;
     int stepCounts;
     int checkBoard[7][7];
