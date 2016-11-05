@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
 	this->yPressed = 0;
 	this->numCounts = 0;
 	this->stepCounts = 0;
+	this->first = 0;
 	memset(checkBoard, 0, sizeof checkBoard);
 	/*
 		for (int i = 0; i < 7; i++)
