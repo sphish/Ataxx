@@ -14,24 +14,88 @@ MainWindow::MainWindow(QWidget *parent)
 	memset(checkBoard, 0, sizeof checkBoard);
 	checkBoard[0][0] = checkBoard[6][6] = 1;
 	checkBoard[0][6] = checkBoard[6][0] = -1;
+	memcpy(backBoard, checkBoard, sizeof checkBoard);
 	setMinimumSize(600, 900);
 	setMaximumSize(600, 900);;
 
-	//Font
+	// Font
 	font = QFont("MONACO", 20);
 
 
-	//New Buttom
-	newGame = new QPushButton("New Game", this);
-	newGame->setGeometry(50, 750, 225, 100);
-	newGame->setFont(font);
+	// PVP Buttom
+	newPVP = new QPushButton("New PVP", this);
+	newPVP->setGeometry(50, 715, 225, 50);
+	newPVP->setFont(font);
+	connect(newPVP, SIGNAL(clicked()), this, SLOT(clear()));
 
-	connect(newGame, SIGNAL(clicked()), this, SLOT(clear()));
+	// PVE Buttom
+	newPVE = new QPushButton("New PVE", this);
+	newPVE->setGeometry(325, 715, 225, 50);
+	newPVE->setFont(font);
+	connect(newPVE, SIGNAL(clicked()), this, SLOT(clear()));
+
+	// Recall Buttom
+	recall = new QPushButton("Recall", this);
+	recall->setGeometry(50, 775, 225, 50);
+	recall->setFont(font);
+	connect(recall, SIGNAL(clicked()), this, SLOT(retire()));
+
+	// Pass Buttom
+	pass = new QPushButton("Pass", this);
+	pass->setGeometry(325, 775, 225, 50);
+	pass->setFont(font);
+	connect(pass, SIGNAL(clicked()), this, SLOT(haha()));
+
+	// Backup Buttom
+	backup = new QPushButton("Backup", this);
+	backup->setGeometry(50, 835, 225, 50);
+	backup->setFont(font);
+	connect(backup, SIGNAL(clicked()), this, SLOT(place()));
+
+	// Load Buttom
+	load = new QPushButton("Load", this);
+	load->setGeometry(325, 835, 225, 50);
+	load->setFont(font);
+	connect(load, SIGNAL(clicked()), this, SLOT(read()));
 }
 
 MainWindow::~MainWindow() {
 }
 
+void MainWindow::read() {
+	freopen("backup", "r", stdin);
+	for (int i = 0; i < 7; i++)
+		for (int j = 0; j < 7; j++)
+			scanf("%d", &checkBoard[i][j]);
+	memcpy(backBoard, checkBoard, sizeof checkBoard);
+	int ha;
+	scanf("%d %d", &ha, &numCounts);
+	turn  = ha;
+	first = false;
+	update();
+}
+
+void MainWindow::place() {
+	freopen("backup", "w", stdout);
+	for (int i = 0; i < 7; i++, puts(""))
+		for (int j = 0; j < 7; j++)
+			printf("%d ", checkBoard[i][j]);
+	printf("%d %d", (int)turn, numCounts);
+	fclose(stdout);
+}
+
+void MainWindow::haha() {
+	turn ^= 1;
+	first = false;
+	update();
+}
+
+void MainWindow::retire() {
+	memcpy(checkBoard, backBoard, sizeof checkBoard);
+	first = false;
+	turn ^= 1;
+	update();
+}
 
 void MainWindow::paintEvent(QPaintEvent *) {
 	QPainter painter(this);
@@ -87,12 +151,6 @@ void MainWindow::paintEvent(QPaintEvent *) {
 	// Draw turn
 	char str2[30] = "Red Turn", str3[30] = "Yellow Turn";
 	painter.drawText(QRectF(0, 70, 600, 30), Qt::AlignHCenter, turn ? str3 : str2);
-
-
-
-
-
-
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *mouseEvent) {
@@ -113,6 +171,7 @@ void MainWindow::mousePressEvent(QMouseEvent *mouseEvent) {
 			return ;
 		}
 
+		memcpy(backBoard, checkBoard, sizeof checkBoard);
 		if (dist == 2)
 			checkBoard[xPressed][yPressed] = 0;
 		else
@@ -163,6 +222,7 @@ void MainWindow::clear() {
 	memset(checkBoard, 0, sizeof checkBoard);
 	checkBoard[0][0] = checkBoard[6][6] = 1;
 	checkBoard[0][6] = checkBoard[6][0] = -1;
+	memcpy(backBoard, checkBoard, sizeof checkBoard);
 	update();
 }
 
