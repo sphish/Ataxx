@@ -100,6 +100,7 @@ void MainWindow::retire() {
 	}
 	memcpy(checkBoard, backBoard, sizeof checkBoard);
 	first = false;
+	numCounts--;
 	turn ^= 1;
 	update();
 }
